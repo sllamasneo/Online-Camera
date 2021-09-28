@@ -87,7 +87,7 @@
 				this.nombreCamara = face
 				console.log(this.video)
 				//Se encarga  de desactivar la cámara y ejecuta el método  store en  modelo  videoOnly
-				this.stopVideoOnly()
+
 				this.gum(face)
 			},
 			/**
@@ -99,13 +99,13 @@
 					return navigator.mediaDevices
 						.getUserMedia({
 							video: {
-								width: { min: 1280 },
-								height: { min: 720 },
+								width: { min: 1024, ideal: 1280, max: 1920 },
+								height: { min: 776, ideal: 720, max: 1080 },
 								facingMode: face,
 							},
 						})
 						.then((stream) => {
-							this.$refs.srcObject = stream
+							this.$refs.video.srcObject = stream
 							this.localstream = stream
 							//Se encarga de asignar stream a la variable  video del store en modelo videoOnly
 						})
@@ -117,13 +117,13 @@
 					return navigator.mediaDevices
 						.getUserMedia({
 							video: {
-								width: { min: 1280 },
-								height: { min: 720 },
+								width: { min: 1024, ideal: 1280, max: 1920 },
+								height: { min: 776, ideal: 720, max: 1080 },
 								facingMode: { exact: face },
 							},
 						})
 						.then((stream) => {
-							this.$refs.srcObject = stream
+							this.$refs.video.srcObject = stream
 							this.localstream = stream
 							//Se encarga de asignar stream a la variable  video del store en modelo videoOnly
 						})
@@ -141,24 +141,8 @@
 						let stream = await navigator.mediaDevices.getUserMedia({
 							video: true,
 						})
-						this.localStream = stream
-						this.$refs.vide = stream
-						this.video.srcObject = stream
+						this.$refs.video.srcObject = stream
 					}
-				} catch (error) {
-					console.log(error)
-				}
-			},
-			/**
-			 * @description Se encarga  de desactivar la cámara
-			 */
-			async stopVideoOnly() {
-				try {
-					this.video.getTracks().forEach(function(track) {
-						if (track.readyState == "live" && track.kind === "video") {
-							track.stop()
-						}
-					})
 				} catch (error) {
 					console.log(error)
 				}
