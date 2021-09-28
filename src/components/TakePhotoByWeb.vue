@@ -58,9 +58,15 @@
 			capture() {
 				if (this.captures.length <= 2) {
 					this.canvas = this.$refs.canvas
-					this.canvas.getContext("2d").drawImage(this.video, 0, 0, 400, 350)
-					console.log(typeof canvas, typeof this.canvas)
+
+					console.log(typeof this.canvas, typeof this.canvas)
 					this.captures.push(this.canvas.toDataURL("image/png"))
+
+					console.log(
+						"Datos img: ",
+						this.array_names[this.captures.length],
+						this.canvas.toDataURL("image/png")
+					)
 				} else {
 					if (this.video.active != true) {
 						alert(
@@ -77,17 +83,39 @@
 			},
 			optionPhoto(e, i) {
 				this.captures.splice(i, 1)
+				localStorage.removeItem(this.array_names[i])
 			},
+			save() {
+				if (this.captures.length == 3) {
+					let i = 0
+					this.captures.forEach((element) => {
+						localStorage.setItem(this.array_names[i], element)
+						i++
+					})
 
+					localStorage.setItem(this.name_array, this.captures)
+					this.message_with_config_success(
+						`Las fotos se han guardado `,
+						"Tomas exitosas"
+					)
+					this.captures = []
+
+					//console.log("Save function", localStorage.getItem(this.name_array))
+				} else {
+					this.message_with_config(
+						`No deberias de estar aquí, contacta a soporte`,
+						"App error"
+					)
+				}
+			},
 			/**
 			 * @description se encarga de asignar  la cámara  del dispositivo
 			 * @param {String}  recibe el valor de que cámara se usara
 			 */
 			camera(face) {
 				this.nombreCamara = face
-				console.log(this.video)
 				//Se encarga  de desactivar la cámara y ejecuta el método  store en  modelo  videoOnly
-
+				this.stopCamara()
 				this.gum(face)
 			},
 			/**
@@ -96,17 +124,16 @@
 			 */
 			gum(face) {
 				if (face === "user") {
-					return navigator.mediaDevices
+					navigator.mediaDevices
 						.getUserMedia({
 							video: {
-								width: { min: 1024, ideal: 1280, max: 1920 },
-								height: { min: 776, ideal: 720, max: 1080 },
 								facingMode: face,
 							},
 						})
 						.then((stream) => {
 							this.$refs.video.srcObject = stream
 							this.localstream = stream
+							this.video = stream
 							//Se encarga de asignar stream a la variable  video del store en modelo videoOnly
 						})
 						.catch((e) => {
@@ -114,17 +141,16 @@
 						})
 				}
 				if (face === "environment") {
-					return navigator.mediaDevices
+					navigator.mediaDevices
 						.getUserMedia({
 							video: {
-								width: { min: 1024, ideal: 1280, max: 1920 },
-								height: { min: 776, ideal: 720, max: 1080 },
 								facingMode: { exact: face },
 							},
 						})
 						.then((stream) => {
 							this.$refs.video.srcObject = stream
 							this.localstream = stream
+							this.video = stream
 							//Se encarga de asignar stream a la variable  video del store en modelo videoOnly
 						})
 						.catch((e) => {
@@ -142,10 +168,18 @@
 							video: true,
 						})
 						this.$refs.video.srcObject = stream
+						this.video = stream
 					}
 				} catch (error) {
 					console.log(error)
 				}
+			},
+			async stopCamara() {
+				this.video.getTracks().forEach(function(track) {
+					if (track.readyState == "live" && track.kind === "video") {
+						track.stop()
+					}
+				})
 			},
 		},
 
