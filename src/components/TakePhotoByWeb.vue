@@ -28,6 +28,7 @@
 				<h1>Tomar foto</h1>
 			</button>
 		</div>
+
 		<ul>
 			<li v-for="(c, i) in captures" v-bind:key="i">
 				<img v-bind:src="c" height="100" v-on:click="optionPhoto(c, i)" />
@@ -84,6 +85,7 @@
 			 */
 			camera(face) {
 				this.nombreCamara = face
+				console.log(this.video)
 				//Se encarga  de desactivar la cámara y ejecuta el método  store en  modelo  videoOnly
 				this.stopVideoOnly()
 				this.gum(face)
@@ -95,7 +97,13 @@
 			gum(face) {
 				if (face === "user") {
 					return navigator.mediaDevices
-						.getUserMedia({ video: { facingMode: face } })
+						.getUserMedia({
+							video: {
+								width: { min: 1280 },
+								height: { min: 720 },
+								facingMode: face,
+							},
+						})
 						.then((stream) => {
 							this.$refs.srcObject = stream
 							this.localstream = stream
@@ -107,7 +115,13 @@
 				}
 				if (face === "environment") {
 					return navigator.mediaDevices
-						.getUserMedia({ video: { facingMode: { exact: face } } })
+						.getUserMedia({
+							video: {
+								width: { min: 1280 },
+								height: { min: 720 },
+								facingMode: { exact: face },
+							},
+						})
 						.then((stream) => {
 							this.$refs.srcObject = stream
 							this.localstream = stream
@@ -127,6 +141,8 @@
 						let stream = await navigator.mediaDevices.getUserMedia({
 							video: true,
 						})
+						this.localStream = stream
+						this.$refs.vide = stream
 						this.video.srcObject = stream
 					}
 				} catch (error) {
