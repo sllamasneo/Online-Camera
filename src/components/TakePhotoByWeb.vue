@@ -46,7 +46,7 @@
 				array_names: [],
 				nombreCamara: "",
 				video: {},
-				canvas: {},
+				canvas: [],
 				captures: [],
 				flag_all_photos: false,
 				fotos_faltantes: 3,
@@ -56,10 +56,12 @@
 
 		methods: {
 			capture() {
-				if (this.captures.length <= 2) {
+				if (this.captures.length <= 2 && this.video.active == true) {
 					this.canvas = this.$refs.canvas
-
-					console.log(typeof this.canvas, typeof this.canvas)
+					var context = this.canvas
+						.getContext("2d")
+						.drawImage(this.video, 0, 0, 400, 350)
+					console.log(typeof context, typeof this.canvas)
 					this.captures.push(this.canvas.toDataURL("image/png"))
 
 					console.log(
@@ -83,30 +85,6 @@
 			},
 			optionPhoto(e, i) {
 				this.captures.splice(i, 1)
-				localStorage.removeItem(this.array_names[i])
-			},
-			save() {
-				if (this.captures.length == 3) {
-					let i = 0
-					this.captures.forEach((element) => {
-						localStorage.setItem(this.array_names[i], element)
-						i++
-					})
-
-					localStorage.setItem(this.name_array, this.captures)
-					this.message_with_config_success(
-						`Las fotos se han guardado `,
-						"Tomas exitosas"
-					)
-					this.captures = []
-
-					//console.log("Save function", localStorage.getItem(this.name_array))
-				} else {
-					this.message_with_config(
-						`No deberias de estar aquí, contacta a soporte`,
-						"App error"
-					)
-				}
 			},
 			/**
 			 * @description se encarga de asignar  la cámara  del dispositivo
@@ -194,16 +172,6 @@
 			//console.log("8 - destroyed")
 			//Se encarga  de desactivar la cámara y ejecuta el método  store en  modelo  videoOnly
 			this.stopVideoOnly()
-		},
-		watch: {
-			captures: function() {
-				this.fotos_faltantes = 3 - this.captures.length
-				if (this.captures.length == 3) {
-					this.flag_all_photos = true
-				} else {
-					this.flag_all_photos = false
-				}
-			},
 		},
 	}
 </script>
