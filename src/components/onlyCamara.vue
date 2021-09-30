@@ -40,21 +40,23 @@
 		data() {
 			return {
 				captures: [],
+				anteriorEstado: "",
 			}
 		},
 		methods: {
 			// Acceso a la webcam
 			async init() {
 				try {
-					const stream = await navigator.mediaDevices.getUserMedia({
-						audio: false,
-						video: {
-							width: 400,
-							height: 400,
-						},
-					})
-					this.$refs.video.srcObject = stream
-					this.video.srcObject = stream
+					if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+						const stream = await navigator.mediaDevices.getUserMedia({
+							video: {
+								width: 400,
+								height: 400,
+							},
+						})
+						this.$refs.video.srcObject = stream
+						this.video.srcObject = stream
+					}
 				} catch (e) {
 					console.log(e)
 				}
@@ -74,8 +76,13 @@
 			//Se encarga  de asignar la camara
 			async camera(face) {
 				try {
-					this.stopCamara()
-					this.gum(face)
+					if (this.anteriorEstado != face) {
+						this.stopCamara()
+						this.gum(face)
+						this.anteriorEstado = face
+					} else {
+						console.log("Camara  : " + face)
+					}
 				} catch (error) {
 					console.log(error)
 				}
@@ -92,7 +99,6 @@
 				})
 				this.$refs.video.srcObject = stream
 				this.video = stream
-				console.log("Esta es la camara de " + face)
 			},
 			async stopCamara() {
 				this.video.getTracks().forEach(function(track) {
@@ -105,6 +111,7 @@
 		mounted() {
 			// Load init
 			this.init()
+			console.log(this.$refs.video)
 		},
 	}
 </script>
