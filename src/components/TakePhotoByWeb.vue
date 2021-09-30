@@ -171,7 +171,7 @@
 			this.captures = []
 			//console.log("8 - destroyed")
 			//Se encarga  de desactivar la cámara y ejecuta el método  store en  modelo  videoOnly
-			this.stopVideoOnly()
+			this.stopCamara()
 		},
 	}
 </script>
