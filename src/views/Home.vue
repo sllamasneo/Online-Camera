@@ -1,14 +1,11 @@
 <!-- @format -->
 
 <template>
-	<div class="home">
-		<HelloWorld />
-	</div>
+	<HelloWorld />
 </template>
 
 <script>
-	// @ is an alias to /src
-	import HelloWorld from "@/components/TakePhotoByWeb.vue"
+	import HelloWorld from "@/components/onlyCamara.vue"
 
 	export default {
 		name: "Home",
